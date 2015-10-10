@@ -28,7 +28,8 @@ namespace GuitarArranger
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/vexflow").Include(
-                        "~/Scripts/vexflow.js"));
+                        "~/Scripts/vexflow-min.js",
+                        "~/Scripts/vexflow-debug.js"));
         }
     }
 }
