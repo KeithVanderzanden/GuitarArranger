@@ -1,21 +1,19 @@
 ﻿@Scripts.Render("~/bundles/vexflow")
+@Scripts.Render("~/bundles/editorFunctions")
 
 @{
     ViewBag.Title = "Editor";
 }
 
-
 <canvas width="900" height="700" id="Composition" style="border:3px solid #000000;"></canvas>
 
 <script>
     var canvas = document.getElementById('Composition');
-    var renderer = new Vex.Flow.Renderer(canvas,
-      Vex.Flow.Renderer.Backends.CANVAS);
-    var ctx = renderer.getContext();
-    var stave = new Vex.Flow.Stave(20, 0,canvas.width - 40);
-    stave.addClef("treble").setContext(ctx).draw();
-    for (i = 1; i < 8; i++) {
-        var stave2 = new Vex.Flow.Stave(20, 100 * i, canvas.width - 40);
-        stave2.setContext(ctx).draw();
-    }
+    initComposition(canvas);
+    drawStaves();
+    canvas.addEventListener('click', function (event) {
+        var x = event.pageX - canvas.offsetLeft;
+        var y = event.pageY - canvas.offsetTop;
+        handleClick(x, y);
+    });
 </script>

@@ -30,6 +30,9 @@ namespace GuitarArranger
             bundles.Add(new ScriptBundle("~/bundles/vexflow").Include(
                         "~/Scripts/vexflow-min.js",
                         "~/Scripts/vexflow-debug.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/editorFunctions").Include(
+                       "~/Scripts/editorFunctions.js"));
         }
     }
 }
