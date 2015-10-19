@@ -1,12 +1,13 @@
-﻿var renderer;
-var ctx;
-var canvasHeight;
-var canvasWidth;
-var staffWidth;
-var staffSpacing;
-var staffNum;
-var measureNum;
-var toggle;
+﻿var renderer,
+    ctx,
+    canvasHeight,
+    canvasWidth,
+    staffWidth,
+    staffSpacing,
+    staffNum,
+    measureNum,
+    toggle,
+    song;
 
 //set global variables, this must be called before using any other functions
 function initComposition(canvas) {
@@ -16,9 +17,9 @@ function initComposition(canvas) {
     renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
     ctx = renderer.getContext();
     staffWidth = (canvas.width - 40) / 4;
-    staffSpacing = 100;
-    handleClick(0, 0);
-    setInterval(function () { drawSelectHighlight(); }, 1000);
+    staffSpacing = 100;  //distance between staves
+    handleClick(0, 0);  //selects first measure
+    setInterval(function () { drawSelectHighlight(); }, 1000); //timer for measure select annimation  
 }
 
 //draw the staff lines on the canvas
@@ -53,7 +54,7 @@ function drawSelectHighlight() {
 
 //find area clicked on draw area and highlight that area
 function handleClick(x, y) {
-    measureNum = parseInt(x / staffWidth);
+    measureNum = parseInt(x  / staffWidth);
     staffNum = parseInt(y / staffSpacing);
     toggle = 0;
 }
@@ -61,4 +62,15 @@ function handleClick(x, y) {
 //redraw staff lines, notes and anything else
 function redraw() {
     drawStaves();
+}
+
+//draw each note in the model
+function drawNotes()
+{
+
+}
+
+function addNote()
+{
+    window.alert(song.Artist);
 }

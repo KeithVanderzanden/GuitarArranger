@@ -1,0 +1,23 @@
+﻿/*
+Customized Guitar Arranger styles
+*/
+
+#toolbar {
+    float: left;
+    height: 600px;
+    width: 150px;
+}
+
+#composition {
+    border:3px solid #000000;
+}
+
+#wrapper {
+    width: 1200px;
+}
+
+.note_button {
+    width: 60px;
+    height: 60px;
+    background-color: lightslategray; 
+}

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GuitarArranger.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,10 +9,13 @@ namespace GuitarArranger.Controllers
 {
     public class EditorController : Controller
     {
-        // GET: Editor
-        public ActionResult Editor()
+        // GET: Index
+        public ActionResult Index()
         {
-            return View();
+            Song song = new Song();
+            song.Artist = "Pink Floyd";
+
+            return View(song);
         }
     }
 }

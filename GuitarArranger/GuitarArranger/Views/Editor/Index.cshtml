@@ -1,0 +1,39 @@
+﻿
+@model GuitarArranger.Models.Song
+@using Newtonsoft.Json
+@Scripts.Render("~/bundles/vexflow")
+@Scripts.Render("~/bundles/editorFunctions")
+
+@{
+    ViewBag.Title = "Editor";
+}
+
+<table id ="table1">
+    <tr>
+        <td>
+            <canvas id="composition" width="900" height="750"></canvas>
+        </td>
+        <td>
+            <div id="toolbar">
+                <button class="note_button" id ="WholeNote"></button>
+                <button class="note_button" id ="HalfNote"></button>
+                <button class="note_button" id ="QuarterNote"></button>
+                <button class="note_button" id ="EighthNote"></button>
+            </div>
+        </td>
+    </tr>
+</table>
+
+
+<script type="text/javascript">
+    song = @Html.Raw(JsonConvert.SerializeObject(@Model)); //convert the model into javascript object
+    var canvas = document.getElementById('composition');
+    var table = document.getElementById('table1');
+    initComposition(canvas);
+    drawStaves();
+    canvas.addEventListener('click', function (event) {
+        var x = event.pageX - table.offsetLeft - 20;
+        var y = event.pageY - table.offsetTop;
+        handleClick(x, y);
+    });
+</script>
