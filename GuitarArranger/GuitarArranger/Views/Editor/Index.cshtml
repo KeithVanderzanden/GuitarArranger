@@ -24,16 +24,15 @@
     </tr>
 </table>
 
-
 <script type="text/javascript">
     song = @Html.Raw(JsonConvert.SerializeObject(@Model)); //convert the model into javascript object
-    var canvas = document.getElementById('composition');
-    var table = document.getElementById('table1');
+    var canvas = document.getElementById('composition'); 
+    var table = document.getElementById('table1');  //reference for the table to pull the offset from
     initComposition(canvas);
     drawStaves();
     canvas.addEventListener('click', function (event) {
         var x = event.pageX - table.offsetLeft - 20;
         var y = event.pageY - table.offsetTop;
         handleClick(x, y);
-    });
+    });   
 </script>

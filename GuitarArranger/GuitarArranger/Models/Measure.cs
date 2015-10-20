@@ -9,13 +9,16 @@ namespace GuitarArranger.Models
     {
         public int MeasureID { get; set; }
 
-        public int MeasureNum { get; set; }
-
-        public virtual ICollection<Note> Notes { get; set; }
+        public virtual List<Note> Notes { get; set; }
 
         public Measure()
         {
             Notes = new List<Note>();
+        }
+
+        public Measure( List<Note> notes)
+        {
+            Notes = notes;
         }
     }
 }

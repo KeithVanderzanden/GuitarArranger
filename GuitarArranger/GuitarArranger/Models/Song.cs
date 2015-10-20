@@ -17,7 +17,7 @@ namespace GuitarArranger.Models
         
         public string Domain { get; set; }
 
-        virtual public ICollection<Page> Pages { get; set; }
+        virtual public List<Page> Pages { get; set; }
 
         public Song()
         {

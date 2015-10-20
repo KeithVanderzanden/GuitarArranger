@@ -7,10 +7,18 @@
     staffNum,
     measureNum,
     toggle,
-    song;
+    song,
+    currentPage,
+    linesPerPage,
+    measuresPerLine,
+    cursor;
 
 //set global variables, this must be called before using any other functions
 function initComposition(canvas) {
+    cursor = 0;
+    currentPage = 0;
+    linesPerPage = 7;
+    measuresPerLine = 4;
     canvasHeight = canvas.height;
     canvasWidth = canvas.width;
     toggle = 0;
@@ -24,16 +32,18 @@ function initComposition(canvas) {
 
 //draw the staff lines on the canvas
 function drawStaves() {
-    for (y = 0; y < 7; y++) {
-        for (x = 0; x < 4; x++) {
-            if (x == 0) {
-                var staff = new Vex.Flow.Stave(20, staffSpacing * y, staffWidth);
+    for (line = 0; line < linesPerPage; line++) {
+        for (measure = 0; measure < measuresPerLine; measure++) {
+            var staff;
+            if (measure == 0) {
+                staff = new Vex.Flow.Stave(20, staffSpacing * line, staffWidth);
                 staff.addClef("treble").setContext(ctx).draw();
             }
             else {
-                var staff = new Vex.Flow.Stave(20 + (staffWidth * x), staffSpacing * y, staffWidth);
+                staff = new Vex.Flow.Stave(20 + (staffWidth * measure), staffSpacing * line, staffWidth);
                 staff.setContext(ctx).draw();
             }
+            drawMeasureNotes(measure + (measuresPerLine * line), staff);
         }
     }
 }
@@ -64,13 +74,32 @@ function redraw() {
     drawStaves();
 }
 
-//draw each note in the model
-function drawNotes()
+//draw each note in the model (currently expecting only one page)
+function drawMeasureNotes(measureNum, staffLine)
 {
-
+    var notes = [];
+    var tones, note;
+    if (song.Pages.length > currentPage && song.Pages[currentPage].Measures.length > measureNum) {
+        for (i = 0; i < song.Pages[currentPage].Measures[measureNum].Notes.length; i++) {
+            tones = [];
+            for (j = 0; j < song.Pages[currentPage].Measures[measureNum].Notes[i].Tones.length; j++) {
+                tones.push(song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Key);
+             }
+            var beat = song.Pages[currentPage].Measures[measureNum].Notes[i].Beat;
+            note = new Vex.Flow.StaveNote({ keys: tones, duration: beat });
+            for (j = 0; j < song.Pages[currentPage].Measures[measureNum].Notes[i].Tones.length; j++) {
+                if (song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Modifier != "")
+                {
+                   note.addAccidental(j, new Vex.Flow.Accidental(song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Modifier));
+                }
+            }
+            notes.push(note);
+        }
+        Vex.Flow.Formatter.FormatAndDraw(ctx, staffLine, notes);
+    }
 }
 
 function addNote()
 {
-    window.alert(song.Artist);
+    
 }

@@ -13,7 +13,6 @@ namespace GuitarArranger.Controllers
         public ActionResult Index()
         {
             Song song = new Song();
-            song.Artist = "Pink Floyd";
 
             return View(song);
         }
