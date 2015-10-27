@@ -99,7 +99,4 @@ function drawMeasureNotes(measureNum, staffLine)
     }
 }
 
-function addNote()
-{
-    
-}
+

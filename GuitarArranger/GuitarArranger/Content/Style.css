@@ -3,21 +3,47 @@ Customized Guitar Arranger styles
 */
 
 #toolbar {
-    float: left;
-    height: 600px;
-    width: 150px;
+    position:absolute;
+    left: 1250px;
+    top: 100px;
+    height: 100px;
+    width: 100px;
 }
 
 #composition {
     border:3px solid #000000;
 }
 
-#wrapper {
-    width: 1200px;
+#editor_wrapper {
+    width: 1050px;
+    height: 800px;
+}
+
+#canvas_wrapper {
+    width: 920px;
+    height: 720px;
 }
 
 .note_button {
-    width: 60px;
-    height: 60px;
-    background-color: lightslategray; 
+    width: 45px;
+    height: 45px;
+    background-color: white;
+    background-size:cover;
+    background-repeat:no-repeat;
+}
+
+.whole_note {
+    background-image: url(../images/wholenote.png);
+}
+
+.quarter_note {
+    background-image: url(../images/quarternote.png);
+}
+
+.half_note {
+    background-image: url(../images/halfnote.png);
+}
+
+.eighth_note {
+    background-image: url(../images/eighthnote.png);
 }

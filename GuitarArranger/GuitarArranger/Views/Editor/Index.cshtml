@@ -1,38 +1,50 @@
-﻿
-@model GuitarArranger.Models.Song
+﻿@model GuitarArranger.Models.Song
 @using Newtonsoft.Json
+@Styles.Render("~/Content/Style.css")
 @Scripts.Render("~/bundles/vexflow")
 @Scripts.Render("~/bundles/editorFunctions")
+
 
 @{
     ViewBag.Title = "Editor";
 }
 
-<table id ="table1">
-    <tr>
-        <td>
-            <canvas id="composition" width="900" height="750"></canvas>
-        </td>
-        <td>
-            <div id="toolbar">
-                <button class="note_button" id ="WholeNote"></button>
-                <button class="note_button" id ="HalfNote"></button>
-                <button class="note_button" id ="QuarterNote"></button>
-                <button class="note_button" id ="EighthNote"></button>
-            </div>
-        </td>
-    </tr>
-</table>
+<div id="editor_wrapper">
+    <div id="canvas_wrapper">
+        <canvas id="composition" width="900" height="750"></canvas>
+    </div>
+    <div id="toolbar">
+        <button class="note_button whole_note" id="WholeNote"></button>
+        <button class="note_button half_note" id="HalfNote"></button>
+        <button class="note_button quarter_note" id="QuarterNote"></button>
+        <button class="note_button eighth_note" id="EighthNote"></button>
+    </div>
+</div>
 
-<script type="text/javascript">
+
+<script>
     song = @Html.Raw(JsonConvert.SerializeObject(@Model)); //convert the model into javascript object
     var canvas = document.getElementById('composition'); 
-    var table = document.getElementById('table1');  //reference for the table to pull the offset from
     initComposition(canvas);
     drawStaves();
     canvas.addEventListener('click', function (event) {
-        var x = event.pageX - table.offsetLeft - 20;
-        var y = event.pageY - table.offsetTop;
+        var x = event.pageX  - document.getElementById('canvas_wrapper').offsetLeft - 20;
+        var y = event.pageY  - document.getElementById('canvas_wrapper').offsetTop;
         handleClick(x, y);
+        addNote("c/4", 1, 1);
     });   
+   
+    function addNote(key, x, y){
+        var note = {
+            Key : key,
+            Measure : x,
+            Beat : "w"
+        }
+        $.ajax({
+            url: 'Editor/Add/',
+            type: 'POST',
+            dataType: 'json',
+            data: note,
+        });
+    }
 </script>

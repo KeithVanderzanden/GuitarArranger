@@ -14,6 +14,10 @@ namespace GuitarArranger.Models
         public Page()
         {
             Measures = new List<Measure>();
+            for (int i = 0; i < 28; i++)
+            {
+                Measures.Add(new Measure());
+            }
         }
 
         public Page(List<Measure> measures)
