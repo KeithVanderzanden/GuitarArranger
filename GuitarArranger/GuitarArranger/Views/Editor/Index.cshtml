@@ -1,50 +1,21 @@
-﻿@model GuitarArranger.Models.Song
-@using Newtonsoft.Json
-@Styles.Render("~/Content/Style.css")
+﻿@Styles.Render("~/Content/Style.css")
 @Scripts.Render("~/bundles/vexflow")
-@Scripts.Render("~/bundles/editorFunctions")
-
+@Scripts.Render("~/Scripts/editorFunctions.js")
 
 @{
     ViewBag.Title = "Editor";
 }
 
-<div id="editor_wrapper">
-    <div id="canvas_wrapper">
-        <canvas id="composition" width="900" height="750"></canvas>
-    </div>
-    <div id="toolbar">
-        <button class="note_button whole_note" id="WholeNote"></button>
-        <button class="note_button half_note" id="HalfNote"></button>
-        <button class="note_button quarter_note" id="QuarterNote"></button>
-        <button class="note_button eighth_note" id="EighthNote"></button>
+<div ng-app="EditorApp">
+    <div id="editor_wrapper">
+        <div ng-controller="CanvasController" id="canvas_wrapper">      
+            <canvas id="composition" width="900" height="750"></canvas>
+        </div>
+        <div id="toolbar">
+            <button class="note_button whole_note" id="WholeNote"></button>
+            <button class="note_button half_note" id="HalfNote"></button>
+            <button class="note_button quarter_note" id="QuarterNote"></button>
+            <button class="note_button eighth_note" id="EighthNote"></button>
+        </div>
     </div>
 </div>
-
-
-<script>
-    song = @Html.Raw(JsonConvert.SerializeObject(@Model)); //convert the model into javascript object
-    var canvas = document.getElementById('composition'); 
-    initComposition(canvas);
-    drawStaves();
-    canvas.addEventListener('click', function (event) {
-        var x = event.pageX  - document.getElementById('canvas_wrapper').offsetLeft - 20;
-        var y = event.pageY  - document.getElementById('canvas_wrapper').offsetTop;
-        handleClick(x, y);
-        addNote("c/4", 1, 1);
-    });   
-   
-    function addNote(key, x, y){
-        var note = {
-            Key : key,
-            Measure : x,
-            Beat : "w"
-        }
-        $.ajax({
-            url: 'Editor/Add/',
-            type: 'POST',
-            dataType: 'json',
-            data: note,
-        });
-    }
-</script>

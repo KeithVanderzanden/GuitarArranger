@@ -34,6 +34,9 @@ namespace GuitarArranger
 
             bundles.Add(new ScriptBundle("~/bundles/editorFunctions").Include(
                        "~/Scripts/editorFunctions.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/angular").Include(
+                       "~/Scripts/angular.js"));
         }
     }
 }

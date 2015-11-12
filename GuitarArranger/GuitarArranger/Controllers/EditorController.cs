@@ -9,23 +9,18 @@ namespace GuitarArranger.Controllers
 {
     public class EditorController : Controller
     {
-        private Song song;
         // GET: Index
         public ActionResult Index()
         {
-            song = new Song();
-            song.Pages.Add(new Page());
-            return View(song);
+            return View();
         }
 
-        [HttpPost]
-        public ActionResult Add(AddNote note)
+        [HttpGet]
+        public ActionResult GetSong()
         {
-            Note addNote = new Note();
-            addNote.Beat = note.Beat;
-            addNote.Tones.Add(new Tone(note.Key, ""));
-            song.Pages[0].Measures[note.Measure].Notes.Add(addNote);
-            return View("Index", song);
+            Song song = new Song();
+            song.Pages.Add(new Page());
+            return Json(song, JsonRequestBehavior.AllowGet);
         }
     }
 }
