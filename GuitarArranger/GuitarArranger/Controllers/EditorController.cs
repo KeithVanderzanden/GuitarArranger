@@ -22,5 +22,12 @@ namespace GuitarArranger.Controllers
             song.Pages.Add(new Page());
             return Json(song, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public ActionResult GetChord()
+        {
+            Note chord = new Note();
+            return Json(chord, JsonRequestBehavior.AllowGet);
+        }
     }
 }

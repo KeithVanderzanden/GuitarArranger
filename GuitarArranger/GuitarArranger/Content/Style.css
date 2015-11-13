@@ -4,13 +4,18 @@ Customized Guitar Arranger styles
 
 #toolbar {
     position:absolute;
-    left: 1250px;
-    top: 100px;
-    height: 100px;
-    width: 100px;
+    left: 80%;
+    top: 10%;
+    height: 200px;
+    width: 200px;
 }
 
 #composition {
+    border:3px solid #000000;
+}
+
+#chordSelect {
+    background-color:white;
     border:3px solid #000000;
 }
 
@@ -25,25 +30,32 @@ Customized Guitar Arranger styles
 }
 
 .note_button {
+    position:absolute;
     width: 45px;
     height: 45px;
     background-color: white;
     background-size:cover;
     background-repeat:no-repeat;
+    float:right;
+    left:142px;
 }
 
 .whole_note {
+    top:0px;
     background-image: url(../images/wholenote.png);
 }
 
 .quarter_note {
+    top:94px;
     background-image: url(../images/quarternote.png);
 }
 
 .half_note {
+    top:47px;
     background-image: url(../images/halfnote.png);
 }
 
 .eighth_note {
+    top:141px;
     background-image: url(../images/eighthnote.png);
 }

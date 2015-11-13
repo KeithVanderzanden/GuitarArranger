@@ -15,7 +15,7 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
 
     initComposition();
     getSong();
-   
+
     function getSong() {
         GetSongService.getSong()
             .success(function (s) {
@@ -117,4 +117,236 @@ EditorApp.factory('GetSongService', ['$http', function ($http) {
         return $http.get('/Editor/GetSong');
     };
     return GetSongService;
+}]);
+
+EditorApp.controller('ToolbarController', function ($scope, GetChordService) {
+
+    var canvas, ctx, selectedYPos;
+
+    getChord();
+
+    function getChord() {
+        GetChordService.getChord()
+            .success(function (ch) {
+                $scope.chord = ch;
+                initChord();
+            })
+            .error(function (error) {
+                $scope.status = 'Unable to load chord: ' + error.message;
+                console.log($scope.status);
+            });
+    }
+    function initChord()
+    {
+        selectedYPos = 105;
+        canvas = document.getElementById("chordSelect");
+        ctx = canvas.getContext("2d");
+        canvas.addEventListener('click', function (event) {
+            var x = event.pageX - document.getElementById('toolbar').offsetLeft;
+            var y = event.pageY - document.getElementById('toolbar').offsetTop - 3;
+            handleClick(x, y);
+        });
+        drawChord();
+    }
+    function handleClick(x, y)
+    {
+        var toneToAdd;
+        var addNote = 1;
+        var normalizedYPos = normalizeYpos(y);
+        if (normalizedYPos < 145 && normalizedYPos > 5) {
+            selectedYPos = normalizedYPos;
+            toneToAdd = { Key: translateKey(normalizedYPos), Modifier: "" };
+            for (i = 0; i < $scope.chord.Tones.length; i++) {
+                if ($scope.chord.Tones[i].Key == toneToAdd.Key)
+                    addNote = 0;
+            }
+            if (addNote == 1)
+                $scope.chord.Tones.push(toneToAdd);
+            drawChord();
+        }
+    }
+    function normalizeYpos(y)
+    {
+        var normalizedYPos;
+        var offset = y % 5;
+        if (offset > 2) {
+            if ((y + (5 - offset)) % 5 == 0)
+                normalizedYPos = y + (5 - offset);
+            else
+                normalizedYPos = y - (5 - offset);
+        }
+        else {
+            if ((y + offset) % 5 == 0)
+                normalizedYPos = y + offset;
+            else
+                normalizedYPos = y - offset;
+        }
+        return normalizedYPos;
+    }
+    function drawChord()
+    {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawStaffLines();
+        for(i = 0; i < $scope.chord.Tones.length; i++)
+        {
+            var yPos = translateYPos($scope.chord.Tones[i].Key);
+            var xPos = 67;
+            if (yPos > 110 || yPos < 60)
+                drawHashMarks(yPos);
+            ctx.beginPath();
+            if (yPos == selectedYPos)
+                ctx.fillStyle = '#ff0000';
+            else
+                ctx.fillStyle = '#000000';
+            ctx.arc(xPos, yPos, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.font = "12px Arial";
+            if (yPos % 10 == 0)
+                ctx.fillText($scope.chord.Tones[i].Key.split("/")[0] + " " + $scope.chord.Tones[i].Modifier, 105, yPos + 3);
+            else
+                ctx.fillText($scope.chord.Tones[i].Key.split("/")[0] + " " + $scope.chord.Tones[i].Modifier, 20, yPos + 3);
+        }
+    }
+    function drawHashMarks(yPos) {
+        var nextHash;
+        if (yPos > 110) {
+            nextHash = 115;
+            while (nextHash <= yPos) {
+                drawSingleHashMark(nextHash);
+                nextHash += 10;
+            }
+        }
+        else {
+            nextHash = 55;
+            while (nextHash >= yPos) {
+                drawSingleHashMark(nextHash);
+                nextHash -= 10;
+            }
+        }
+    }
+    function drawSingleHashMark(yPos)
+    {
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.moveTo(60, yPos);
+        ctx.lineTo(76, yPos);
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+    }
+    function drawStaffLines()
+    {
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.moveTo(50, 65);
+        ctx.lineTo(85, 65);
+        ctx.moveTo(50, 75);
+        ctx.lineTo(85, 75);
+        ctx.moveTo(50, 85);
+        ctx.lineTo(85, 85);
+        ctx.moveTo(50, 95);
+        ctx.lineTo(85, 95);
+        ctx.moveTo(50, 105);
+        ctx.lineTo(85, 105);
+        ctx.lineWidth = 1;
+        ctx.moveTo(50, 65);
+        ctx.lineTo(50, 105);
+        ctx.moveTo(85, 65);
+        ctx.lineTo(85, 105);
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+    }
+    function translateYPos(key)
+    {
+        var yPos = 0;
+        var keyElements = key.split("/");
+        if (keyElements.length == 2) {
+            switch (keyElements[0]) {
+                case "a":
+                    yPos = 90;
+                    break;
+                case "b":
+                    yPos = 85;
+                    break;
+                case "c":
+                    yPos = 115;
+                    break;
+                case "d":
+                    yPos = 110;
+                    break;
+                case "e":
+                    yPos = 105;
+                    break;
+                case "f":
+                    yPos = 100;
+                    break;
+                case "g":
+                    yPos = 95;
+                    break;
+                default:
+                    yPos = 0;
+                    $scope.status = 'Unable to translate key to mouse coordinates in chord designer';
+                    console.log($scope.status);
+                    break;
+            }
+            yPos += ((-(Number(keyElements[1])) + 4) * 35);
+        }
+        return yPos;
+    }
+    function translateKey(yPos)
+    {
+        var keyPosition = 4;
+        var normalizedYPos = yPos;
+        var key;
+        if (yPos > 115) {
+            while (normalizedYPos > 115)
+            {
+                normalizedYPos -= 35;
+                keyPosition -= 1;
+            }
+        }
+        else {
+            while (normalizedYPos <= 80) {
+                normalizedYPos += 35;
+                keyPosition += 1;
+            }
+        }
+        switch (normalizedYPos)
+        {
+            case 115:
+                key = "c/";
+                break;
+            case 110:
+                key = "d/";
+                break;
+            case 105:
+                key = "e/";
+                break;
+            case 100:
+                key = "f/";
+                break;
+            case 95:
+                key = "g/";
+                break;
+            case 90:
+                key = "a/";
+                break;
+            case 85:
+                key = "b/";
+                break;
+            default:
+                $scope.status = 'Unable to translate mouse position to a key in chord designer';
+                console.log($scope.status);
+                break;
+        }
+        key = key + keyPosition.toString();
+        return key;
+    }
+});
+
+EditorApp.factory('GetChordService', ['$http', function ($http) {
+    var GetChordService = {};
+    GetChordService.getChord = function () {
+        return $http.get('/Editor/GetChord');
+    };
+    return GetChordService;
 }]);
