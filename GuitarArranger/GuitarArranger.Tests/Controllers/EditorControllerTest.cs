@@ -19,42 +19,42 @@ namespace GuitarArranger.Tests.Controllers
             Song song = new Song();
             Page page = new Page(new List<Measure> {
                 new Measure(new List<Note> {
-                    new Note(new List<Tone> { new Tone("e/3", "") }, "q"),
-                    new Note(new List<Tone> { new Tone("f/3", "") }, "q"),
-                    new Note(new List<Tone> { new Tone("f/3", "#") }, "q"),
-                    new Note(new List<Tone> { new Tone("g/3", "") }, "q")
+                    new Note(new List<Tone> { new Tone("e/3", "") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("f/3", "") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("f/3", "#") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("g/3", "") }, new List<TabTone>(),  "q")
                 }),
                 new Measure(new List<Note> {
-                    new Note(new List<Tone> { new Tone("e/3", "") }, "q"),
-                    new Note(new List<Tone> { new Tone("f/3", "") }, "q"),
-                    new Note(new List<Tone> { new Tone("f/3", "#") }, "q"),
-                    new Note(new List<Tone> { new Tone("g/3", "") }, "q")
+                    new Note(new List<Tone> { new Tone("e/3", "") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("f/3", "") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("f/3", "#") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("g/3", "") }, new List<TabTone>(), "q")
                 }),
                 new Measure(new List<Note> {
-                    new Note(new List<Tone> { new Tone("e/3", "") }, "q"),
-                    new Note(new List<Tone> { new Tone("f/3", "") }, "q"),
-                    new Note(new List<Tone> { new Tone("f/3", "#") }, "q"),
-                    new Note(new List<Tone> { new Tone("g/3", "") }, "q")
+                    new Note(new List<Tone> { new Tone("e/3", "") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("f/3", "") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("f/3", "#") }, new List<TabTone>(), "q"),
+                    new Note(new List<Tone> { new Tone("g/3", "") }, new List<TabTone>(), "q")
                 }),
                 new Measure(new List<Note> {
-                    new Note(new List<Tone> { new Tone("g/3", "#") }, "8"),
-                    new Note(new List<Tone> { new Tone("a/3", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("a/3", "#") }, "8"),
-                    new Note(new List<Tone> { new Tone("b/3", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("c/4", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("c/4", "#") }, "8"),
-                    new Note(new List<Tone> { new Tone("d/4", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("d/4", "#") }, "8")
+                    new Note(new List<Tone> { new Tone("g/3", "#") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("a/3", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("a/3", "#") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("b/3", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("c/4", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("c/4", "#") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("d/4", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("d/4", "#") }, new List<TabTone>(), "8")
                 }),
                 new Measure(new List<Note> {
-                    new Note(new List<Tone> { new Tone("e/4", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("f/4", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("f/4", "#") }, "8"),
-                    new Note(new List<Tone> { new Tone("g/4", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("g/4", "#") }, "8"),
-                    new Note(new List<Tone> { new Tone("a/4", "") }, "8"),
-                    new Note(new List<Tone> { new Tone("a/4", "#") }, "8"),
-                    new Note(new List<Tone> { new Tone("b/4", "") }, "8")
+                    new Note(new List<Tone> { new Tone("e/4", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("f/4", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("f/4", "#") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("g/4", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("g/4", "#") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("a/4", "") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("a/4", "#") }, new List<TabTone>(), "8"),
+                    new Note(new List<Tone> { new Tone("b/4", "") }, new List<TabTone>(), "8")
                 })
             });
             song.Pages.Add(page);

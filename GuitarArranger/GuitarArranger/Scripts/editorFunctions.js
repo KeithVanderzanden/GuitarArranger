@@ -1,5 +1,5 @@
 ﻿var EditorApp = angular.module('EditorApp', []);
-EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongService) {
+EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongService, TabulateSongService) {
     //Editor variables
     var renderer,
     ctx,
@@ -10,16 +10,18 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
     blinkToggle,
     currentPage,
     linesPerPage,
-    measuresPerLine,
-    cursor;
+    measuresPerLine;
 
     initComposition();
     getSong();
 
     $scope.$on('addNote', function (event, args) {
-        var newChord = { NoteId: args.NoteId, Tones: [], Beat: args.Beat };
+        var newChord = { NoteId: args.NoteId, Tones: [], TabTones: [], Beat: args.Beat };
         for (i = 0; i < args.Tones.length; i++) {
             newChord.Tones.push({ Key: args.Tones[i].Key, Modifier: args.Tones[i].Modifier });
+        }
+        for (i = 0; i < args.TabTones.length; i++) {
+            newChord.TabTones.push({ StringNum: args.TabTones[i].StringNum, Fret : args.TabTones[i].Fret, Modifier: args.TabTones[i].Modifier });
         }
         var beatsInMeasure = 0;
         for (i = 0; i < $scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes.length; i++)
@@ -33,6 +35,17 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
             drawStaves();
         }
     });
+    $scope.tabulateSong = function () {
+        TabulateSongService.tabulateSong($scope.song)
+            .success(function (data) {
+                $scope.song = data;
+                drawStaves();
+            })
+            .error(function (error) {
+                $scope.status = 'Failed to return tabulation : ' + error.message;
+                console.log($scope.status);
+            });
+    }
     function getSong() {
         GetSongService.getSong()
             .success(function (s) {
@@ -46,19 +59,19 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
     }
     function initComposition() {
         canvas = document.getElementById('composition');
-        cursor = 0;
         currentPage = 0;
         linesPerPage = 7;
         measuresPerLine = 4;
         blinkToggle = 0;
         renderer = new Vex.Flow.Renderer(canvas, Vex.Flow.Renderer.Backends.CANVAS);
         ctx = renderer.getContext();
+        ctx.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
         staffWidth = (canvas.width - 40) / 4;
-        staffSpacing = 100;  //distance between staves
+        staffSpacing = 200;  //distance between staves
         measureNum = 0;
         staffNum = 0;
         blinkToggle = 0;
-        setInterval(function () { drawSelectHighlight(); }, 1000); //timer for measure select annimation  
+        //setInterval(function () { drawSelectHighlight(); }, 1000); //timer for measure select annimation  
         canvas.addEventListener('click', function (event) {
             var x = event.pageX - document.getElementById('canvas_wrapper').offsetLeft - 20;
             var y = event.pageY - document.getElementById('canvas_wrapper').offsetTop;
@@ -71,15 +84,25 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
         for (line = 0; line < linesPerPage; line++) {
             for (measure = 0; measure < measuresPerLine; measure++) {
                 var staff;
+                var tabStaff;
                 if (measure == 0) {
                     staff = new Vex.Flow.Stave(20, staffSpacing * line, staffWidth);
                     staff.addClef("treble").setContext(ctx).draw();
+                    tabStaff = new Vex.Flow.TabStave(20, (staffSpacing * line) + 70, staffWidth);
+                    tabStaff.addTabGlyph().setContext(ctx).draw();
+                    ctx.beginPath();
+                    ctx.moveTo(17, staffSpacing * line + 39);
+                    ctx.lineWidth = 2;
+                    ctx.lineTo(17, (staffSpacing * line) + 188);
+                    ctx.stroke();
                 }
                 else {
                     staff = new Vex.Flow.Stave(20 + (staffWidth * measure), staffSpacing * line, staffWidth);
                     staff.setContext(ctx).draw();
+                    tabStaff = new Vex.Flow.TabStave(20 + (staffWidth * measure), (staffSpacing * line) + 70, staffWidth);
+                    tabStaff.setContext(ctx).draw();
                 }
-                drawMeasureNotes(measure + (measuresPerLine * line), staff);
+                drawMeasureNotes(measure + (measuresPerLine * line), staff, tabStaff);
             }
         }
     }
@@ -96,17 +119,16 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
         }
         drawStaves();
     }
-    //find area clicked on draw area and highlight that area
     function handleClick(x, y) {
         measureNum = parseInt(x / staffWidth);
         staffNum = parseInt(y / staffSpacing);
         blinkToggle = 0;
         $rootScope.$broadcast('compositionClicked', {});
     }
-    //draw each note in the model (currently expecting only one page)
-    function drawMeasureNotes(measureNum, staffLine) {
+    function drawMeasureNotes(measureNum, staffLine, tabStaffLine) {
         var notes = [];
-        var tones, note;
+        var tabNotes = [];
+        var tones, note, tabTones, tabNote;
         if ($scope.song.Pages.length > currentPage && $scope.song.Pages[currentPage].Measures.length > measureNum) {
             for (i = 0; i < $scope.song.Pages[currentPage].Measures[measureNum].Notes.length; i++) {
                 tones = [];
@@ -116,13 +138,35 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
                 var beat = $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Beat;
                 note = new Vex.Flow.StaveNote({ keys: tones, duration: beat });
                 for (j = 0; j < $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Tones.length; j++) {
-                    if ($scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Modifier != "") {
+                    if ($scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Modifier != "" &&
+                            $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Modifier != null) {
                         note.addAccidental(j, new Vex.Flow.Accidental($scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Tones[j].Modifier));
                     }
                 }
                 notes.push(note);
             }
+            for (i = 0; i < $scope.song.Pages[currentPage].Measures[measureNum].Notes.length; i++) {
+                tabTones = [];
+                for (j = 0; j < $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].TabTones.length; j++) {
+                    tabTones.push({
+                        str : $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].TabTones[j].StringNum,
+                        fret: $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].TabTones[j].Fret
+                    });
+                }
+                var beat = $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Beat;
+                if (tabTones.length > 0) {
+                    tabNote = new Vex.Flow.TabNote({ positions: tabTones, duration: beat });
+                    for (j = 0; j < $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].TabTones.length; j++) {
+                        if ($scope.song.Pages[currentPage].Measures[measureNum].Notes[i].TabTones[j].Modifier != "" &&
+                                $scope.song.Pages[currentPage].Measures[measureNum].Notes[i].TabTones[j].Modifier != null) {
+                            //add modifier here to add support for bends ect...
+                        }
+                    }
+                    tabNotes.push(tabNote);
+                }
+            }
             Vex.Flow.Formatter.FormatAndDraw(ctx, staffLine, notes);
+            Vex.Flow.Formatter.FormatAndDraw(ctx, tabStaffLine, tabNotes);
         }
     }
     function convertBeatToNumber(beat)
@@ -156,6 +200,14 @@ EditorApp.factory('GetSongService', ['$http', function ($http) {
     return GetSongService;
 }]);
 
+EditorApp.factory('TabulateSongService', ['$http', function ($http) {
+    var TabulateSongService = {};
+    TabulateSongService.tabulateSong = function (song) {
+        return $http.post('/Editor/TabulateSong', song);
+    };
+    return TabulateSongService;
+}]);
+
 EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChordService) {
 
     var canvas, ctx, selectedYPos;
@@ -172,8 +224,35 @@ EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChord
         $scope.chord.Tones = [];
         drawChord();
     };
+    $scope.raiseSelectedTone = function () {
+        if (selectedYPos > 15) {
+            var current = translateKey(selectedYPos);
+            var next = translateKey(selectedYPos - 5);
+            for (i = 0; i < $scope.chord.Tones.length; i++) {
+                if (current === $scope.chord.Tones[i].Key) {
+                    $scope.chord.Tones[i].Key = next;
+                }
+            }
+            selectedYPos -= 5;
+            drawChord();
+        }
+    }
+    $scope.lowerSelectedTone = function () {
+        if (selectedYPos < 140) {
+            var current = translateKey(selectedYPos);
+            var next = translateKey(selectedYPos + 5);
+            for (i = 0; i < $scope.chord.Tones.length; i++) {
+                if (current === $scope.chord.Tones[i].Key) {
+                    $scope.chord.Tones[i].Key = next;
+                }
+            }
+            selectedYPos += 5;
+            drawChord();
+        }
+    }
     $scope.$on('compositionClicked', function (event, args) {
-        $rootScope.$broadcast('addNote', $scope.chord);
+        if ($scope.chord.Tones.length > 0)
+            $rootScope.$broadcast('addNote', $scope.chord);
     });
     function getChord() {
         GetChordService.getChord()

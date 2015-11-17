@@ -7,14 +7,23 @@ namespace GuitarArranger.Models
 {
     public class Tone
     {
-        public string Key { get; set; }
+        public virtual string Key { get; set; }
 
-        public string Modifier { get; set; }
+        public virtual string Modifier { get; set; }
 
+        public Tone()
+        {
+            Key = "";
+            Modifier = "";
+        }
         public Tone(string key, string mod)
         {
             Key = key;
             Modifier = mod;
+            if (Key == null)
+                Key = "";
+            if (Modifier == null)
+                Modifier = "";
         }
     }
 }

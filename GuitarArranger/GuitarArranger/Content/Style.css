@@ -3,75 +3,109 @@ Customized Guitar Arranger styles
 */
 
 #toolbar {
-    position:absolute;
-    left: 80%;
-    top: 10%;
-    height: 200px;
-    width: 200px;
-}
-
-#composition {
-    border:3px solid #000000;
+    position: fixed;
+    right: 5px;
+    top: 80px;
+    height: 188px;
+    width: 218px;
 }
 
 #chordSelect {
-    background-color:white;
-    border:3px solid #000000;
+    position:absolute;
+    left:30px;
+}
+
+#tab_control_toolbox {
+    position: fixed;
+    right: 5px;
+    top: 300px;
+    height: 188px;
+    width: 188px;
+}
+
+#tabulate_button {
+    position: absolute;
+    left: 20%;
+    width: 60%;
+    height: 20%;
+}
+
+#composition {
+    border: 3px solid #000000;
+}
+
+#chordSelect {
+    background-color: white;
+    border: 3px solid #000000;
 }
 
 #editor_wrapper {
     width: 1050px;
-    height: 800px;
+    height: 1420px;
 }
 
 #canvas_wrapper {
     width: 920px;
-    height: 720px;
+    height: 1420px;
 }
 
 .modifier_button {
-    position:absolute;
+    position: absolute;
     width: 30px;
     height: 30px;
     background-color: white;
-    background-size:cover;
-    background-repeat:no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .clear_chord {
-    top:153px;
-    left:108px;
+    top: 153px;
+    left: 138px;
+    background-image: url(../images/delete.png)
 }
+
+.up_note {
+    top: 58px;
+    left: 15px;
+    background-image: url(../images/up_arrow.png)
+}
+
+.down_note {
+    top: 93px;
+    left: 15px;
+    background-image: url(../images/down_arrow.png)
+}
+
 .note_button {
-    position:absolute;
+    position: absolute;
     width: 45px;
     height: 45px;
     background-color: white;
-    background-size:cover;
-    background-repeat:no-repeat;
-    left:142px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    left: 172px;
 }
 
 .whole_note {
-    top:0px;
+    top: 0px;
     background-image: url(../images/wholenote.png);
 }
 
 .quarter_note {
-    top:94px;
+    top: 94px;
     background-image: url(../images/quarternote.png);
 }
 
 .half_note {
-    top:47px;
+    top: 47px;
     background-image: url(../images/halfnote.png);
 }
 
 .eighth_note {
-    top:141px;
+    top: 141px;
     background-image: url(../images/eighthnote.png);
 }
 
 .buttonSelected {
-    background-color:darkgrey;
+    background-color: darkgrey;
 }
