@@ -1,18 +1,4 @@
-﻿<head>
-    <style type="text/css">
-        .auto-style1 {
-            height: 487px;
-        }
-        .auto-style2 {
-            height: 475px;
-        }
-        .auto-style3 {
-            width: 196px;
-            height: 194px;
-        }
-    </style>
-</head>
-@Styles.Render("~/Content/Style.css")
+﻿@Styles.Render("~/Content/Style.css")
 @Scripts.Render("~/bundles/vexflow")
 @Scripts.Render("~/Scripts/editorFunctions.js")
 
@@ -22,15 +8,16 @@
 
 <div ng-app="EditorApp">
     <div id="editor_wrapper">
-        <div ng-controller="CanvasController" id="canvas_wrapper">   
+        <div ng-controller="CanvasController" id="canvas_wrapper">
             <canvas id="composition" width="900" height="750"></canvas>
         </div>
         <div ng-controller="ToolbarController" id="toolbar">
-            <canvas id="chordSelect" width="135" height="180"></canvas>   
-            <button class="note_button whole_note" id="WholeNote" ng-click="WholeNoteClicked"></button>
-            <button class="note_button half_note" id="HalfNote" ng-click="HalfNoteClicked"></button>
-            <button class="note_button quarter_note" id="QuarterNote" ng-click="QuarterNoteClicked"></button>
-            <button class="note_button eighth_note" id="EighthNote" ng-click="EighthNoteClicked"></button>    
+            <canvas id="chordSelect" width="135" height="180"></canvas>
+            <button class="modifier_button clear_chord" id="ClearButton" ng-click ="clearChord()">C</button>
+            <button class="note_button whole_note" id="WholeNote" ng-class="{buttonSelected: isActive('w')}" ng-click="setActive('w')"></button>
+            <button class="note_button half_note" id="HalfNote" ng-class="{buttonSelected: isActive('h')}" ng-click="setActive('h')"></button>
+            <button class="note_button quarter_note" id="QuarterNote" ng-class="{buttonSelected: isActive('q')}" ng-click="setActive('q')"></button>
+            <button class="note_button eighth_note" id="EighthNote" ng-class="{buttonSelected: isActive('8')}" ng-click="setActive('8')"></button>
         </div>
     </div>
 </div>

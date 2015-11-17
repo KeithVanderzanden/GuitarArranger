@@ -29,6 +29,19 @@ Customized Guitar Arranger styles
     height: 720px;
 }
 
+.modifier_button {
+    position:absolute;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    background-size:cover;
+    background-repeat:no-repeat;
+}
+
+.clear_chord {
+    top:153px;
+    left:108px;
+}
 .note_button {
     position:absolute;
     width: 45px;
@@ -36,7 +49,6 @@ Customized Guitar Arranger styles
     background-color: white;
     background-size:cover;
     background-repeat:no-repeat;
-    float:right;
     left:142px;
 }
 
@@ -58,4 +70,8 @@ Customized Guitar Arranger styles
 .eighth_note {
     top:141px;
     background-image: url(../images/eighthnote.png);
+}
+
+.buttonSelected {
+    background-color:darkgrey;
 }

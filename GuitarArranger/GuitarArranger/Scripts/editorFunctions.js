@@ -1,5 +1,5 @@
 ﻿var EditorApp = angular.module('EditorApp', []);
-EditorApp.controller('CanvasController', function ($scope, GetSongService) {
+EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongService) {
     //Editor variables
     var renderer,
     ctx,
@@ -16,6 +16,23 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
     initComposition();
     getSong();
 
+    $scope.$on('addNote', function (event, args) {
+        var newChord = { NoteId: args.NoteId, Tones: [], Beat: args.Beat };
+        for (i = 0; i < args.Tones.length; i++) {
+            newChord.Tones.push({ Key: args.Tones[i].Key, Modifier: args.Tones[i].Modifier });
+        }
+        var beatsInMeasure = 0;
+        for (i = 0; i < $scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes.length; i++)
+        {
+            beatsInMeasure += convertBeatToNumber($scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes[i].Beat);
+        }
+        var singleBeat = $scope.song.SingleBeat;
+        var totalBeatsPerMeasure = $scope.song.BeatsPerMeasure;
+        if (beatsInMeasure + convertBeatToNumber(args.Beat) <= totalBeatsPerMeasure) {
+            $scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes.push(newChord);
+            drawStaves();
+        }
+    });
     function getSong() {
         GetSongService.getSong()
             .success(function (s) {
@@ -27,7 +44,6 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
                 console.log($scope.status);
             });
     }
-
     function initComposition() {
         canvas = document.getElementById('composition');
         cursor = 0;
@@ -39,7 +55,9 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
         ctx = renderer.getContext();
         staffWidth = (canvas.width - 40) / 4;
         staffSpacing = 100;  //distance between staves
-        handleClick(0, 0);  //selects first measure
+        measureNum = 0;
+        staffNum = 0;
+        blinkToggle = 0;
         setInterval(function () { drawSelectHighlight(); }, 1000); //timer for measure select annimation  
         canvas.addEventListener('click', function (event) {
             var x = event.pageX - document.getElementById('canvas_wrapper').offsetLeft - 20;
@@ -47,9 +65,9 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
             handleClick(x, y);
         });
     }
-
     //draw the staff lines on the canvas
     function drawStaves() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (line = 0; line < linesPerPage; line++) {
             for (measure = 0; measure < measuresPerLine; measure++) {
                 var staff;
@@ -65,7 +83,6 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
             }
         }
     }
-
     function drawSelectHighlight() {
         ctx.clearRect(0, 0, canvas.width, canvas.width);
         if (blinkToggle == 0) {
@@ -79,14 +96,13 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
         }
         drawStaves();
     }
-
     //find area clicked on draw area and highlight that area
     function handleClick(x, y) {
         measureNum = parseInt(x / staffWidth);
         staffNum = parseInt(y / staffSpacing);
         blinkToggle = 0;
+        $rootScope.$broadcast('compositionClicked', {});
     }
-
     //draw each note in the model (currently expecting only one page)
     function drawMeasureNotes(measureNum, staffLine) {
         var notes = [];
@@ -109,6 +125,27 @@ EditorApp.controller('CanvasController', function ($scope, GetSongService) {
             Vex.Flow.Formatter.FormatAndDraw(ctx, staffLine, notes);
         }
     }
+    function convertBeatToNumber(beat)
+    {
+        var beatInt = 0;
+        switch (beat) {
+            case 'w':
+                beatInt = 1;
+                break;
+            case 'h':
+                beatInt = 2;
+                break;
+            case 'q':
+                beatInt = 4;
+                break;
+            case '8':
+                beatInt = 8;
+                break;
+            default:
+                break;
+        }
+        return $scope.song.SingleBeat / beatInt;
+    }
 });
 
 EditorApp.factory('GetSongService', ['$http', function ($http) {
@@ -119,12 +156,25 @@ EditorApp.factory('GetSongService', ['$http', function ($http) {
     return GetSongService;
 }]);
 
-EditorApp.controller('ToolbarController', function ($scope, GetChordService) {
+EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChordService) {
 
     var canvas, ctx, selectedYPos;
-
     getChord();
 
+    $scope.setActive = function (type) {
+        $scope.active = type;
+        $scope.chord.Beat = type;
+    };
+    $scope.isActive = function (type) {
+        return type === $scope.active;
+    };
+    $scope.clearChord = function () {
+        $scope.chord.Tones = [];
+        drawChord();
+    };
+    $scope.$on('compositionClicked', function (event, args) {
+        $rootScope.$broadcast('addNote', $scope.chord);
+    });
     function getChord() {
         GetChordService.getChord()
             .success(function (ch) {
@@ -147,6 +197,10 @@ EditorApp.controller('ToolbarController', function ($scope, GetChordService) {
             handleClick(x, y);
         });
         drawChord();
+        if ($scope.chord.Beat == null || $scope.chord.Beat == "")
+            $scope.setActive("w");
+        else
+            $scope.setActive($scope.chord.Beat);
     }
     function handleClick(x, y)
     {

@@ -20,6 +20,8 @@ namespace GuitarArranger.Controllers
         {
             Song song = new Song();
             song.Pages.Add(new Page());
+            song.BeatsPerMeasure = 4;
+            song.SingleBeat = 4;
             return Json(song, JsonRequestBehavior.AllowGet);
         }
 

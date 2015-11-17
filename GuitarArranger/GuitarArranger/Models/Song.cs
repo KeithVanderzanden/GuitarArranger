@@ -17,6 +17,10 @@ namespace GuitarArranger.Models
         
         public string Domain { get; set; }
 
+        public int BeatsPerMeasure { get; set; }
+
+        public int SingleBeat { get; set; }
+
         virtual public List<Page> Pages { get; set; }
 
         public Song()
