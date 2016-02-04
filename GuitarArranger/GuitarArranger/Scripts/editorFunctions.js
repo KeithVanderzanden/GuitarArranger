@@ -1,5 +1,5 @@
 ﻿var EditorApp = angular.module('EditorApp', []);
-EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongService, TabulateSongService) {
+EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongService, SaveSongService, TabulateSongService) {
     //Editor variables
     var renderer,
     ctx,
@@ -43,6 +43,17 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
             })
             .error(function (error) {
                 $scope.status = 'Failed to return tabulation : ' + error.message;
+                console.log($scope.status);
+            });
+    }
+    $scope.saveSong = function () {
+        SaveSongService.saveSong($scope.song)
+            .success(function (data) {
+                $scope.song = data;
+                drawStaves();
+            })
+            .error(function (error) {
+                $scope.status = 'Unable to save song: ' + error.message;
                 console.log($scope.status);
             });
     }
@@ -198,6 +209,14 @@ EditorApp.factory('GetSongService', ['$http', function ($http) {
         return $http.get('/Editor/GetSong');
     };
     return GetSongService;
+}]);
+
+EditorApp.factory('SaveSongService', ['$http', function ($http) {
+    var SaveSongService = {};
+    SaveSongService.saveSong = function (song) {
+        return $http.post('/Editor/SaveSong', song);
+    };
+    return SaveSongService;
 }]);
 
 EditorApp.factory('TabulateSongService', ['$http', function ($http) {

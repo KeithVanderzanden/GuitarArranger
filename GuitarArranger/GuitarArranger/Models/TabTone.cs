@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -7,11 +8,11 @@ namespace GuitarArranger.Models
 {
     public class TabTone
     {
-        public virtual string Fret { get; set; }
+        public string Fret { get; set; }
 
-        public virtual string TabModifier { get; set; }
+        public string TabModifier { get; set; }
 
-        public virtual string StringNum { get; set; }
+        public string StringNum { get; set; }
 
         public TabTone()
         {
@@ -31,6 +32,11 @@ namespace GuitarArranger.Models
                 TabModifier = "";
             if (Fret == null)
                 Fret = "";
+        }
+
+        public override string ToString()
+        {
+            return (Fret + " " + TabModifier + " " + StringNum + " ");
         }
     }
 }

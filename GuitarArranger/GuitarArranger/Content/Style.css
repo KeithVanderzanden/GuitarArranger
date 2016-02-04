@@ -30,6 +30,26 @@ Customized Guitar Arranger styles
     height: 20%;
 }
 
+#save_button {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 20%;
+}
+
+.save_window {
+    position: fixed;
+    width: 60%;
+    border: solid;
+    height: 50%;
+    background-color:white;
+}
+
+#confirmSave_button {
+
+} 
+
 #composition {
     border: 3px solid #000000;
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GuitarArranger.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -25,6 +26,17 @@ namespace GuitarArranger.Controllers
             ViewBag.Message = "";
 
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult GetUsersCompositions(string user)
+        {
+            List<Composition> allComps = new List<Composition>();
+            using (var db = new CompositionContext())
+            {
+                allComps.AddRange(db.Compositions.Where(x => x.Author == user).ToList<Composition>());
+            }
+            return Json(allComps, JsonRequestBehavior.AllowGet);
         }
     }
 }

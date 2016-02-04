@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -7,9 +8,9 @@ namespace GuitarArranger.Models
 {
     public class Tone
     {
-        public virtual string Key { get; set; }
+        public string Key { get; set; }
 
-        public virtual string Modifier { get; set; }
+        public string Modifier { get; set; }
 
         public Tone()
         {
@@ -24,6 +25,11 @@ namespace GuitarArranger.Models
                 Key = "";
             if (Modifier == null)
                 Modifier = "";
+        }
+
+        public override string ToString()
+        {
+            return (Key + " " + Modifier + " ");
         }
     }
 }

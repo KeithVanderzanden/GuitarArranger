@@ -21,7 +21,9 @@ namespace GuitarArranger.Controllers
         {
             Song song = new Song();
             song.Pages.Add(new Page());
-            song.Artist = "some artist";
+            song.Artist = "N/A";
+            song.Title = "New Song";
+            song.Author = "";
             song.BeatsPerMeasure = 4;
             song.SingleBeat = 4;
             /*song.Pages[0].Measures[0] = new Measure(new List<Note> {
@@ -37,11 +39,41 @@ namespace GuitarArranger.Controllers
             return Json(song, JsonRequestBehavior.AllowGet);
         }
 
+
+        [HttpGet]
+        public ActionResult GetSong(Composition c)
+        {
+            Song song = new Song();
+            using (var db = new CompositionContext())
+            {
+                song.setMetaData(c);
+                song.setContent(c.Content, c.TabContent);
+            }
+            return Json(song, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         public ActionResult GetChord()
         {
             Note chord = new Note();
             return Json(chord, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult SaveSong(Song song)
+        {
+            using (var db = new CompositionContext())
+            {
+                Composition c = new Composition();
+                song.getMetaData(c);
+                c.Content = song.getContent();
+                c.TabContent = song.getTabContent();
+
+                db.Compositions.Add(c);
+                db.SaveChanges();
+                song.setMetaData(c);
+            }
+            return Json(song, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -64,13 +96,10 @@ namespace GuitarArranger.Controllers
                         {
                             n.Tones.Add(tone);
                             n.TabTones.Add(tab.getTabNote(tone));
-                            n.NoteId = note.NoteId;
                         }
                         m.Notes.Add(n);
-                        m.MeasureID = measure.MeasureID;
                     }
                     p.Measures.Add(m);
-                    p.PageId = page.PageId;
                 }
                 s.Artist = song.Artist;
                 s.Author = song.Author;
@@ -81,6 +110,6 @@ namespace GuitarArranger.Controllers
                 s.Title = song.Title;
             }
             return Json(s, JsonRequestBehavior.AllowGet);
-        }
+        }     
     }
 }
