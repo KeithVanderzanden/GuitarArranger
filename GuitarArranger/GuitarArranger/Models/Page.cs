@@ -45,5 +45,25 @@ namespace GuitarArranger.Models
             }
             return sb.ToString();
         }
+
+        public void setContent(string content)
+        {
+            string[] measures = content.Split(';');
+            measures = measures.Take(measures.Count() - 1).ToArray();
+            for (int i = 0; i < measures.Count(); i++)
+            {
+                Measures[i].setContent(measures[i]);
+            }
+        }
+
+        public void setTabContent(string tabContent)
+        {
+            string[] measures = tabContent.Split(';');
+            measures = measures.Take(measures.Count() - 1).ToArray();
+            for (int i = 0; i < measures.Count(); i++)
+            {
+                Measures[i].setTabContent(measures[i]);
+            }
+        }
     }
 }

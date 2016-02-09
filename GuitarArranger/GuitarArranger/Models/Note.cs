@@ -32,11 +32,10 @@ namespace GuitarArranger.Models
         public string getNoteContent()
         {
             StringBuilder sb = new StringBuilder();
+            sb.Append(Beat + "-");
             foreach (var tone in Tones)
             {
-                sb.Append(Beat + " ");
                 sb.Append(tone.ToString());
-                sb.Append('.');
             }
             return sb.ToString();
         }
@@ -44,13 +43,43 @@ namespace GuitarArranger.Models
         public string getNoteTabContent()
         {
             StringBuilder sb = new StringBuilder();
+            sb.Append(Beat + "-");
             foreach (var tone in TabTones)
             {
-                sb.Append(Beat + " ");
                 sb.Append(tone.ToString());
-                sb.Append('.');
             }
             return sb.ToString();
+        }
+
+        public void setContent(string content)
+        {
+            Tones.Clear();
+            string[] tones = content.Split('-');
+            tones = tones.Take(tones.Count() - 1).ToArray();
+            if (tones.Count() > 0)
+            {
+                Beat = tones[0];
+                for (int i = 1; i <= tones.Count() - 2; i += 2)
+                {
+                    Tone t = new Tone(tones[i], tones[i + 1]);
+                    Tones.Add(t);
+                }
+            }
+        }
+
+        public void setTabContent(string tabContent)
+        {
+            TabTones.Clear();
+            string[] tones = tabContent.Split('-');
+            tones = tones.Take(tones.Count() - 1).ToArray();
+            if (tones.Count() > 3)
+            {
+                for (int i = 1; i < tones.Count() - 2; i += 3)
+                {
+                    TabTone t = new TabTone(tones[i], tones[i + 1], tones[i + 2]);
+                    TabTones.Add(t);
+                }
+            }
         }
     }
 }

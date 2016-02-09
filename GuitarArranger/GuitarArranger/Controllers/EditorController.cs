@@ -11,37 +11,43 @@ namespace GuitarArranger.Controllers
     public class EditorController : Controller
     {
         // GET: Index
-        public ActionResult Index()
+        public ActionResult Index(Composition c)
         {
-            return View();
+            System.Web.HttpContext.Current.Session["CompositionID"] = c.CompositionID.ToString();
+            return View(c);
         }
 
         [HttpGet]
         public ActionResult GetSong()
         {
             Song song = new Song();
-            song.Pages.Add(new Page());
-            song.Artist = "N/A";
-            song.Title = "New Song";
-            song.Author = "";
-            song.BeatsPerMeasure = 4;
-            song.SingleBeat = 4;
-            /*song.Pages[0].Measures[0] = new Measure(new List<Note> {
-                    new Note(new List<Tone> { new Tone("c/4", "") }, 
-                        new List<TabTone> (), "q"),
-                    new Note(new List<Tone> { new Tone("d/4", "") }, 
-                        new List<TabTone> (), "q"),
-                    new Note(new List<Tone> { new Tone("e/4", "#") }, 
-                        new List<TabTone> (), "q"),
-                    new Note(new List<Tone> { new Tone("e/4", "") }, 
-                        new List<TabTone> (),  "q")
-                });*/ 
+            if (System.Web.HttpContext.Current.Session["CompositionID"] as string == "0")
+            {
+                song.Pages.Add(new Page());
+                song.Artist = "N/A";
+                song.Title = "New Song";
+                song.Author = "";
+                song.BeatsPerMeasure = 4;
+                song.SingleBeat = 4;
+            }
+            else
+            {
+                Composition c;
+                int compID = Convert.ToInt32(System.Web.HttpContext.Current.Session["CompositionID"] as string);
+                using (var db = new CompositionContext())
+                {
+                    c = db.Compositions.Where(x => x.CompositionID == compID).Single();
+                    song.setMetaData(c);
+                    song.setContent(c.Content, c.TabContent);
+                }
+            }
+
             return Json(song, JsonRequestBehavior.AllowGet);
         }
 
 
         [HttpGet]
-        public ActionResult GetSong(Composition c)
+        public ActionResult GetSongFromComposition(Composition c)
         {
             Song song = new Song();
             using (var db = new CompositionContext())
@@ -62,16 +68,29 @@ namespace GuitarArranger.Controllers
         [HttpPost]
         public JsonResult SaveSong(Song song)
         {
+            int compID = Convert.ToInt32(System.Web.HttpContext.Current.Session["CompositionID"] as string);
             using (var db = new CompositionContext())
             {
-                Composition c = new Composition();
+                Composition c;
+                if (compID == 0)
+                {
+                    c = new Composition();
+                }
+                else
+                {
+                    c = db.Compositions.Find(compID);
+                }
                 song.getMetaData(c);
                 c.Content = song.getContent();
                 c.TabContent = song.getTabContent();
-
-                db.Compositions.Add(c);
+                c.User = User.Identity.Name;
+               if (compID == 0)
+                { 
+                    db.Compositions.Add(c);
+                    //reset compositionID session variable here
+                }
                 db.SaveChanges();
-                song.setMetaData(c);
+                song.setMetaData(c);//??????
             }
             return Json(song, JsonRequestBehavior.AllowGet);
         }
@@ -101,14 +120,11 @@ namespace GuitarArranger.Controllers
                     }
                     p.Measures.Add(m);
                 }
-                s.Artist = song.Artist;
-                s.Author = song.Author;
-                s.BeatsPerMeasure = song.BeatsPerMeasure;
                 s.Pages.Add(p);
-                s.SingleBeat = song.SingleBeat;
-                s.SongId = song.SongId;
-                s.Title = song.Title;
             }
+            Composition c = new Composition();
+            song.getMetaData(c);
+            s.setMetaData(c);
             return Json(s, JsonRequestBehavior.AllowGet);
         }     
     }

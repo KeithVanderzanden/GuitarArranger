@@ -1,7 +1,10 @@
-﻿@Styles.Render("~/Content/Style.css")
+﻿@model GuitarArranger.Models.Composition
+@using Microsoft.AspNet.Identity
+
+@Styles.Render("~/Content/Style.css")
 @Scripts.Render("~/bundles/vexflow")
-@Scripts.Render("~/Scripts/editorFunctions.js")
-@Scripts.Render("~/Scripts/angular.js")
+@Scripts.Render("~/bundles/editorFunctions")
+
 
 @{
     ViewBag.Title = "Editor";
@@ -13,30 +16,36 @@
             <h1 ng-click"saveSong();">{{song.Title}}</h1>
             <div ng-show="showSaveWindow" class="save_window">
                 <form>
-                    <legend>Song info</legend>
                     <p>Song title : <input type="text" ng-model="song.Title" /></p>
                     <p>Artist : <input type="text" ng-model="song.Artist" /></p>
                     <p>Author : <input type="text" ng-model="song.Author" /></p>
+                    <p>Difficulty : <input type="text" ng-model="song.Difficulty" /></p>
                     <button id="confirmSave_button" ng-click="saveSong(); showSaveWindow=false;">OK</button>
                     <button id="cancelSave_button" ng-click= "showSaveWindow=false;">Cancel</button>
                 </form> 
             </div>
             <canvas id="composition" width="900" height="1420"></canvas>
             <div id ="tab_control_toolbox">
-                <button id="tabulate_button" ng-click="tabulateSong()">Generate Tab</button>
-                <button id="save_button" ng-click="showSaveWindow=true">Save</button>
+                @if (Request.IsAuthenticated)
+                    {
+                        <button id="tabulate_button" ng-click="tabulateSong()">Generate Tab</button>
+                        <button id="save_button" ng-click="showSaveWindow=true">Save</button>
+                }
             </div>
-            
+
         </div>
+        @if (Request.IsAuthenticated)
+                    {
         <div ng-controller="ToolbarController" id="toolbar">
             <canvas id="chordSelect" width="135" height="180"></canvas>
-            <button class="modifier_button clear_chord" id="ClearButton" ng-click ="clearChord()"></button>
-            <button class="modifier_button up_note" ng-click ="raiseSelectedTone()"></button>
-            <button class="modifier_button down_note" ng-click ="lowerSelectedTone()"></button>
+            <button class="modifier_button clear_chord" id="ClearButton" ng-click="clearChord()"></button>
+            <button class="modifier_button up_note" ng-click="raiseSelectedTone()"></button>
+            <button class="modifier_button down_note" ng-click="lowerSelectedTone()"></button>
             <button class="note_button whole_note" id="WholeNote" ng-class="{buttonSelected: isActive('w')}" ng-click="setActive('w')"></button>
             <button class="note_button half_note" id="HalfNote" ng-class="{buttonSelected: isActive('h')}" ng-click="setActive('h')"></button>
             <button class="note_button quarter_note" id="QuarterNote" ng-class="{buttonSelected: isActive('q')}" ng-click="setActive('q')"></button>
             <button class="note_button eighth_note" id="EighthNote" ng-class="{buttonSelected: isActive('8')}" ng-click="setActive('8')"></button>
         </div>
+        }        
     </div>
 </div>

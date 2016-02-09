@@ -12,6 +12,7 @@ namespace GuitarArranger.Controllers
         public ActionResult Index()
         {
             return View();
+            
         }
 
         public ActionResult About()
@@ -28,15 +29,39 @@ namespace GuitarArranger.Controllers
             return View();
         }
 
-        [HttpGet]
-        public ActionResult GetUsersCompositions(string user)
+        public ActionResult UsersFiles()
         {
-            List<Composition> allComps = new List<Composition>();
+            List<Composition> files = new List<Composition>();
             using (var db = new CompositionContext())
             {
-                allComps.AddRange(db.Compositions.Where(x => x.Author == user).ToList<Composition>());
+                files = db.Compositions.Where(x => x.User == User.Identity.Name).ToList<Composition>();
+                foreach (Composition c in files)
+                {
+                    c.Content = "";
+                    c.TabContent = "";
+                }
             }
-            return Json(allComps, JsonRequestBehavior.AllowGet);
+            return PartialView(files);
+        }
+
+        public ActionResult Search(string searchBy, string search)
+        {
+            List<Composition> files = new List<Composition>();
+            using (var db = new CompositionContext())
+            {
+                if (searchBy == "Difficulty" || searchBy == null)
+                {
+                    if (search == null)
+                        files = db.Compositions.Where(x => x.Difficulty == "Easy").ToList<Composition>();
+                    else
+                        files = db.Compositions.Where(x => x.Difficulty == search).ToList<Composition>();
+                }
+                else
+                {
+                    files = db.Compositions.Where(x => x.Title == search).ToList<Composition>();
+                }
+            }
+            return PartialView(files);
         }
     }
 }

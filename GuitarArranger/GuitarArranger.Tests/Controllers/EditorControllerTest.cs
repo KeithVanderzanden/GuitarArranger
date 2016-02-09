@@ -61,11 +61,6 @@ namespace GuitarArranger.Tests.Controllers
             // Arrange
             EditorController controller = new EditorController();
 
-            // Act
-            ViewResult result = controller.Index() as ViewResult;
-
-            // Assert
-            Assert.IsNotNull(result);
         }
     }
 }

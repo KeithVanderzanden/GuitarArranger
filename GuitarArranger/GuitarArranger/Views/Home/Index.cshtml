@@ -1,3 +1,19 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿@using Microsoft.AspNet.Identity
+@Styles.Render("~/Content/Style.css")
+
+@{ViewBag.Title = "Home Page";}
+
+<div>
+    <div>
+        @if (Request.IsAuthenticated) {
+        <div>
+            <h1>Your recent files</h1>
+            @Html.Action("UsersFiles","Home")
+        </div>
+        <hr />
+        }
+        <div>
+            @{ Html.RenderAction("Search", "Home"); }
+        </div>
+    </div>
+</div>

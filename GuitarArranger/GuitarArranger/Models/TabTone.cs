@@ -36,7 +36,7 @@ namespace GuitarArranger.Models
 
         public override string ToString()
         {
-            return (Fret + " " + TabModifier + " " + StringNum + " ");
+            return (Fret + "-" + TabModifier + "-" + StringNum + "-");
         }
     }
 }

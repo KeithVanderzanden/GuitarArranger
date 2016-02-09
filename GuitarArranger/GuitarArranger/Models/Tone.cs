@@ -29,7 +29,7 @@ namespace GuitarArranger.Models
 
         public override string ToString()
         {
-            return (Key + " " + Modifier + " ");
+            return (Key + "-" + Modifier + "-");
         }
     }
 }

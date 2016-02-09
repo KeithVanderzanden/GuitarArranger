@@ -36,6 +36,7 @@ namespace GuitarArranger.Models
             foreach (var page in Pages)
             {
                 sb.Append(page.getPageContent());
+                sb.Append('_');
             }
             return sb.ToString();
         }
@@ -46,13 +47,28 @@ namespace GuitarArranger.Models
             foreach (var page in Pages)
             {
                 sb.Append(page.getPageTabContent());
+                sb.Append('_');
             }
             return sb.ToString();
         }
 
         public void setContent(string content, string tabContent)
         {
-            throw new NotImplementedException();
+            Pages.Clear();
+            string[] pages = content.Split('_');
+            string[] tabPages = tabContent.Split('_');
+            pages = pages.Take(pages.Count() - 1).ToArray();
+            tabPages = tabPages.Take(tabPages.Count() - 1).ToArray();
+            foreach (string s in pages)
+            {
+                Page p = new Page();
+                p.setContent(s);
+                Pages.Add(p);
+            }
+            for(int i = 0; i < tabPages.Count(); i++)
+            {
+                Pages[i].setTabContent(tabPages[i]);
+            }
         }
 
         public void getMetaData(Composition c)
