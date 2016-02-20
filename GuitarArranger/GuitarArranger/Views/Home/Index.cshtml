@@ -8,7 +8,7 @@
         @if (Request.IsAuthenticated) {
         <div>
             <h1>Your recent files</h1>
-            @Html.Action("UsersFiles","Home")
+            @{Html.RenderAction("UsersFiles", "Home");}
         </div>
         <hr />
         }

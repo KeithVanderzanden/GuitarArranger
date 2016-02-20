@@ -87,10 +87,17 @@ namespace GuitarArranger.Controllers
                if (compID == 0)
                 { 
                     db.Compositions.Add(c);
-                    //reset compositionID session variable here
                 }
                 db.SaveChanges();
-                song.setMetaData(c);//??????
+                song.setMetaData(c);
+                song.SongId = c.CompositionID;
+            }
+            foreach (var p in song.Pages)
+            {
+                while (p.Measures.Count() < 28)
+                {
+                    p.Measures.Add(new Measure());
+                }
             }
             return Json(song, JsonRequestBehavior.AllowGet);
         }
@@ -125,6 +132,13 @@ namespace GuitarArranger.Controllers
             Composition c = new Composition();
             song.getMetaData(c);
             s.setMetaData(c);
+            foreach (var p in s.Pages)
+            {
+                while (p.Measures.Count() < 28)
+                {
+                    p.Measures.Add(new Measure());
+                }
+            }
             return Json(s, JsonRequestBehavior.AllowGet);
         }     
     }
