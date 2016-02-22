@@ -5,7 +5,6 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
     ctx,
     staffWidth,
     staffSpacing,
-    staffNum,
     measureNum,
     blinkToggle,
     currentPage,
@@ -15,6 +14,13 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
     initComposition();
     getSong();
 
+    $scope.timeSignature = '4/4';
+    $scope.keySignature = 'C';
+    $scope.timeSignatures = ['4/4', '3/4', '2/4', '2/2', '3/8', '6/8', '9/8', '12/8', '5/4', '6/4' ]
+    $scope.keySignatures = ["C", "Am", "F", "Dm", "Bb", "Gm", "Eb", "Cm",
+        "Ab", "Fm", "Db", "Bbm", "Gb", "Ebm", "Cb", "Abm", "G", "Em", "D",
+        "Bm", "A", "F#m", "E", "C#m", "B", "G#m", "F#", "D#m", "C#", "A#m"]
+    $scope.difficulties = ["Easy", "Intermediate", "Expert", "Master"]
     $scope.$on('addNote', function (event, args) {
         var newChord = { NoteId: args.NoteId, Tones: [], TabTones: [], Beat: args.Beat };
         for (i = 0; i < args.Tones.length; i++) {
@@ -24,14 +30,14 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
             newChord.TabTones.push({ StringNum: args.TabTones[i].StringNum, Fret : args.TabTones[i].Fret, Modifier: args.TabTones[i].Modifier });
         }
         var beatsInMeasure = 0;
-        for (i = 0; i < $scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes.length; i++)
+        for (i = 0; i < $scope.song.Pages[currentPage].Measures[measureNum].Notes.length; i++)
         {
-            beatsInMeasure += convertBeatToNumber($scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes[i].Beat);
+            beatsInMeasure += convertBeatToNumber($scope.song.Pages[currentPage].Measures[measureNum].Notes[i].Beat);
         }
         var singleBeat = $scope.song.SingleBeat;
         var totalBeatsPerMeasure = $scope.song.BeatsPerMeasure;
         if (beatsInMeasure + convertBeatToNumber(args.Beat) <= totalBeatsPerMeasure) {
-            $scope.song.Pages[currentPage].Measures[measureNum + (staffNum * measuresPerLine)].Notes.push(newChord);
+            $scope.song.Pages[currentPage].Measures[measureNum].Notes.push(newChord);
             drawStaves();
         }
     });
@@ -57,10 +63,22 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
                 console.log($scope.status);
             });
     }
+    $scope.changeTimeSignature = function () {
+        var temp = $scope.timeSignature.split('/');
+        $scope.song.BeatsPerMeasure = temp[0];
+        $scope.song.SingleBeat = temp[1];
+        drawStaves();
+    }
+    $scope.changeKeySignature = function () {
+        $scope.song.KeySignature = $scope.keySignature;
+        drawStaves();
+    }
     function getSong() {
         GetSongService.getSong()
             .success(function (s) {
                 $scope.song = s;
+                $scope.keySignature = s.KeySignature;
+                $scope.timeSignature = s.BeatsPerMeasure + "/" + s.SingleBeat;
                 drawStaves();
             })
             .error(function (error) {
@@ -80,7 +98,6 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
         staffWidth = (canvas.width - 40) / 4;
         staffSpacing = 200;  //distance between staves
         measureNum = 0;
-        staffNum = 0;
         blinkToggle = 0;
         //setInterval(function () { drawSelectHighlight(); }, 1000); //timer for measure select annimation  
         canvas.addEventListener('click', function (event) {
@@ -98,7 +115,12 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
                 var tabStaff;
                 if (measure == 0) {
                     staff = new Vex.Flow.Stave(20, staffSpacing * line, staffWidth);
-                    staff.addClef("treble").setContext(ctx).draw();
+                    staff.addClef("treble");
+                    if (line == 0) {
+                        staff.addTimeSignature($scope.song.BeatsPerMeasure + "/" + $scope.song.SingleBeat);
+                        staff.addKeySignature($scope.song.KeySignature);
+                    }
+                    staff.setContext(ctx).draw();
                     tabStaff = new Vex.Flow.TabStave(20, (staffSpacing * line) + 70, staffWidth);
                     tabStaff.addTabGlyph().setContext(ctx).draw();
                     ctx.beginPath();
@@ -113,7 +135,8 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
                     tabStaff = new Vex.Flow.TabStave(20 + (staffWidth * measure), (staffSpacing * line) + 70, staffWidth);
                     tabStaff.setContext(ctx).draw();
                 }
-                drawMeasureNotes(measure + (measuresPerLine * line), staff, tabStaff);
+                if (!(line == 0 && measure == 0))
+                    drawMeasureNotes(measure - 1 + (measuresPerLine * line), staff, tabStaff);
             }
         }
     }
@@ -121,7 +144,7 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
         ctx.clearRect(0, 0, canvas.width, canvas.width);
         if (blinkToggle == 0) {
             ctx.fillStyle = "#FF0000";
-            ctx.fillRect(measureNum * staffWidth + 20, staffNum * staffSpacing + 40, staffWidth, staffSpacing - 60);
+            //ctx.fillRect(measureNum * staffWidth + 20, staffNum * staffSpacing + 40, staffWidth, staffSpacing - 60);
             ctx.fillStyle = "#000000";
             blinkToggle = 1;
         }
@@ -131,10 +154,18 @@ EditorApp.controller('CanvasController', function ($scope, $rootScope, GetSongSe
         drawStaves();
     }
     function handleClick(x, y) {
+        var staffNum = parseInt((y - (staffSpacing / 3)) / staffSpacing);
         measureNum = parseInt(x / staffWidth);
-        staffNum = parseInt(y / staffSpacing);
+        measureNum = measureNum + (staffNum * measuresPerLine) - 1;
         blinkToggle = 0;
-        $rootScope.$broadcast('compositionClicked', {});
+        if (measureNum > -1)
+        {
+            //determine if a prexisting note was clicked or add a new note
+
+
+            $rootScope.$broadcast('compositionClicked', {});
+        }
+            
     }
     function drawMeasureNotes(measureNum, staffLine, tabStaffLine) {
         var notes = [];
@@ -229,7 +260,8 @@ EditorApp.factory('TabulateSongService', ['$http', function ($http) {
 
 EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChordService) {
 
-    var canvas, ctx, selectedYPos;
+    var canvas, ctx;
+    var selectedYPos = 0;
     getChord();
 
     $scope.setActive = function (type) {
@@ -248,6 +280,12 @@ EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChord
             var current = translateKey(selectedYPos);
             var next = translateKey(selectedYPos - 5);
             for (i = 0; i < $scope.chord.Tones.length; i++) {
+                if (next === $scope.chord.Tones[i].Key) {
+                    $scope.chord.Tones.splice(i, 1);
+                    break;
+                }
+            }
+            for (i = 0; i < $scope.chord.Tones.length; i++) {
                 if (current === $scope.chord.Tones[i].Key) {
                     $scope.chord.Tones[i].Key = next;
                 }
@@ -261,6 +299,12 @@ EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChord
             var current = translateKey(selectedYPos);
             var next = translateKey(selectedYPos + 5);
             for (i = 0; i < $scope.chord.Tones.length; i++) {
+                if (next === $scope.chord.Tones[i].Key) {
+                    $scope.chord.Tones.splice(i, 1);
+                    break;
+                }
+            }
+            for (i = 0; i < $scope.chord.Tones.length; i++) {
                 if (current === $scope.chord.Tones[i].Key) {
                     $scope.chord.Tones[i].Key = next;
                 }
@@ -268,6 +312,22 @@ EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChord
             selectedYPos += 5;
             drawChord();
         }
+    }
+    $scope.addFlat = function () {
+        if (selectedYPos != 0)
+            addModifierToSelectedNote("b");
+    }
+    $scope.addDoubleFlat = function () {
+        if (selectedYPos != 0)
+            addModifierToSelectedNote("bb");
+    }
+    $scope.addSharp = function () {
+        if (selectedYPos != 0)
+            addModifierToSelectedNote("#");
+    }
+    $scope.addDoubleSharp = function () {
+        if (selectedYPos != 0)
+            addModifierToSelectedNote("##");
     }
     $scope.$on('compositionClicked', function (event, args) {
         if ($scope.chord.Tones.length > 0)
@@ -317,6 +377,18 @@ EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChord
             drawChord();
         }
     }
+    function addModifierToSelectedNote(mod) {
+        var current = translateKey(selectedYPos);
+        for (i = 0; i < $scope.chord.Tones.length; i++) {
+            if (current === $scope.chord.Tones[i].Key) {
+                if ($scope.chord.Tones[i].Modifier === mod)
+                    $scope.chord.Tones[i].Modifier = "";
+                else
+                    $scope.chord.Tones[i].Modifier = mod;
+            }
+        }
+        drawChord();
+    }
     function normalizeYpos(y)
     {
         var normalizedYPos;
@@ -354,9 +426,9 @@ EditorApp.controller('ToolbarController', function ($scope, $rootScope, GetChord
             ctx.fill();
             ctx.font = "12px Arial";
             if (yPos % 10 == 0)
-                ctx.fillText($scope.chord.Tones[i].Key.split("/")[0] + " " + $scope.chord.Tones[i].Modifier, 105, yPos + 3);
+                ctx.fillText($scope.chord.Tones[i].Key.split("/")[0].toUpperCase() + " " + $scope.chord.Tones[i].Modifier, 105, yPos + 3);
             else
-                ctx.fillText($scope.chord.Tones[i].Key.split("/")[0] + " " + $scope.chord.Tones[i].Modifier, 20, yPos + 3);
+                ctx.fillText($scope.chord.Tones[i].Key.split("/")[0].toUpperCase() + " " + $scope.chord.Tones[i].Modifier, 20, yPos + 3);
         }
     }
     function drawHashMarks(yPos) {

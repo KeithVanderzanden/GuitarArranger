@@ -26,9 +26,11 @@ namespace GuitarArranger.Controllers
                 song.Pages.Add(new Page());
                 song.Artist = "N/A";
                 song.Title = "New Song";
-                song.Author = "";
+                song.Author = "N/A";
                 song.BeatsPerMeasure = 4;
+                song.Difficulty = "Easy";
                 song.SingleBeat = 4;
+                song.KeySignature = "C";
             }
             else
             {

@@ -202,10 +202,14 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="images\delete.png" />
+    <Content Include="images\double_flat.png" />
+    <Content Include="images\double_sharp.png" />
     <Content Include="images\down_arrow.png" />
     <Content Include="images\eighthnote.png" />
+    <Content Include="images\flat.png" />
     <Content Include="images\halfnote.png" />
     <Content Include="images\quarternote.png" />
+    <Content Include="images\sharp.png" />
     <Content Include="images\up_arrow.png" />
     <Content Include="images\wholenote.png" />
     <Content Include="Scripts\angular-animate.js" />

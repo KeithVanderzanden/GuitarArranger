@@ -29,6 +29,8 @@ namespace GuitarArranger.Models
         public string Content { get; set; }
 
         public string TabContent { get; set; }
+        
+        public string KeySignature { get; set; }
     }
 
     public class CompositionContext : DbContext

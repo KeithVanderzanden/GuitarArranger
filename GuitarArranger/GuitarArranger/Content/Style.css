@@ -24,19 +24,44 @@ Customized Guitar Arranger styles
 }
 
 #tabulate_button {
-    position: absolute;
     left: 20%;
     width: 60%;
     height: 20%;
 }
 
 #save_button {
-    position: absolute;
-    top: 20%;
     left: 20%;
     width: 60%;
     height: 20%;
 }
+
+#title{
+    float:right;
+    width:60%;
+}
+
+#artist{
+    float:right;
+    width:60%;
+}
+#author{
+    float:right;
+    width:60%;
+}
+
+#difficulty{
+    float:right;
+    width:60%;
+}
+
+#keySig{
+    float:right;
+}
+
+#timeSig{
+    float:right;
+}
+
 
 .save_window {
     position: fixed;
@@ -76,6 +101,7 @@ Customized Guitar Arranger styles
     background-color: white;
     background-size: cover;
     background-repeat: no-repeat;
+    left: 0px;
 }
 
 .clear_chord {
@@ -85,17 +111,34 @@ Customized Guitar Arranger styles
 }
 
 .up_note {
-    top: 58px;
-    left: 15px;
+    top: 63px;
     background-image: url(../images/up_arrow.png)
 }
 
 .down_note {
-    top: 93px;
-    left: 15px;
+    top: 94px;
     background-image: url(../images/down_arrow.png)
 }
 
+.flat {
+    top: 125px;
+    background-image: url(../images/flat.png)
+}
+
+.double_flat {
+    top: 156px;
+    background-image: url(../images/double_flat.png)
+}
+
+.sharp {
+    top: 32px;
+    background-image: url(../images/sharp.png)
+}
+
+.double_sharp {
+    top: 1px;
+    background-image: url(../images/double_sharp.png)
+}
 .note_button {
     position: absolute;
     width: 45px;

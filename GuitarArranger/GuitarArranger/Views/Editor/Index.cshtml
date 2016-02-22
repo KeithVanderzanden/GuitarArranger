@@ -19,7 +19,7 @@
                     <p>Song title : <input type="text" ng-model="song.Title" /></p>
                     <p>Artist : <input type="text" ng-model="song.Artist" /></p>
                     <p>Author : <input type="text" ng-model="song.Author" /></p>
-                    <p>Difficulty : <input type="text" ng-model="song.Difficulty" /></p>
+                    <p>Difficulty : <select ng-model="song.Difficulty" ng-options="opt as opt for opt in difficulties"></select></p>
                     <button id="confirmSave_button" ng-click="saveSong(); showSaveWindow=false;">OK</button>
                     <button id="cancelSave_button" ng-click= "showSaveWindow=false;">Cancel</button>
                 </form> 
@@ -27,9 +27,28 @@
             <canvas id="composition" width="900" height="1420"></canvas>
             <div id ="tab_control_toolbox">
                 @if (Request.IsAuthenticated)
-                    {
+                {
+                    <p>
+                        <label>Time Signature </label>
+                        <select id="timeSig" ng-model="timeSignature" ng-options="opt as opt for opt in timeSignatures" ng-change="changeTimeSignature()"></select>
+                    </p>
+                    <p>
+                        <label>Key Signature </label>
+                        <select id="keySig" ng-model="keySignature" ng-options="opt as opt for opt in keySignatures" ng-change="changeKeySignature()"></select>
+                    </p>
+                        <p><label for="title">Title&nbsp</label><input id="title" ng-model="song.Title" /></p>
+                    <p><label for="artist">Artist&nbsp</label><input id="artist" ng-model="song.Artist" /></p>
+                    <p><label for="author">Author&nbsp</label><input id="author" ng-model="song.Author" /></p>
+                    <p>
+                        <label>Difficulty</label>
+                        <select id="difficulty" ng-model="song.Difficulty" ng-options="opt as opt for opt in difficulties"></select>
+                    </p>
+                    <p>
                         <button id="tabulate_button" ng-click="tabulateSong()">Generate Tab</button>
+                    </p>
+                    <p>
                         <button id="save_button" ng-click="showSaveWindow=true">Save</button>
+                    </p>
                 }
             </div>
 
@@ -41,6 +60,10 @@
             <button class="modifier_button clear_chord" id="ClearButton" ng-click="clearChord()"></button>
             <button class="modifier_button up_note" ng-click="raiseSelectedTone()"></button>
             <button class="modifier_button down_note" ng-click="lowerSelectedTone()"></button>
+            <button class="modifier_button flat" ng-click="addFlat()"></button>
+            <button class="modifier_button double_flat" ng-click="addDoubleFlat()"></button>
+            <button class="modifier_button sharp" ng-click="addSharp()"></button>
+            <button class="modifier_button double_sharp" ng-click="addDoubleSharp()"></button>
             <button class="note_button whole_note" id="WholeNote" ng-class="{buttonSelected: isActive('w')}" ng-click="setActive('w')"></button>
             <button class="note_button half_note" id="HalfNote" ng-class="{buttonSelected: isActive('h')}" ng-click="setActive('h')"></button>
             <button class="note_button quarter_note" id="QuarterNote" ng-class="{buttonSelected: isActive('q')}" ng-click="setActive('q')"></button>

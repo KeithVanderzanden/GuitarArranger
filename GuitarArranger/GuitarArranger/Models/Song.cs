@@ -23,6 +23,8 @@ namespace GuitarArranger.Models
 
         public int SingleBeat { get; set; }
 
+        public string KeySignature { get; set; }
+
         public List<Page> Pages { get; set; }
 
         public Song()
@@ -80,6 +82,7 @@ namespace GuitarArranger.Models
             c.Difficulty = Difficulty;
             c.SingleBeat = SingleBeat;
             c.Title = Title;
+            c.KeySignature = KeySignature;
             return;
         }
 
@@ -92,6 +95,7 @@ namespace GuitarArranger.Models
             Difficulty = c.Difficulty;
             SingleBeat = c.SingleBeat;
             Title = c.Title;
+            KeySignature = c.KeySignature;
         }
     }
 
